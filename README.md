@@ -3,7 +3,7 @@
 ## Установка
 1. Клонируем репозиторий
 ```
-git clone https://github.com/IlyaDanilenko/KiberdromVisualizator
+git clone https://github.com/IlyaDanilenko/KiberdromVisualizator.git
 ```
 2. Устанавливаем необходимые библиотеки Python
 ```
