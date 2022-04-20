@@ -10,6 +10,7 @@ sio = Client() # клиент SocketIO
 def response(data): # функция обработки ответа
     global objects
     if data["response"] == "ok": # если ответ получен, отправляем данные
+        objects[0]['position']['x'] += 0.02
         sio.emit('position', json.dumps(objects))
 
 sio.connect('http://localhost:8080') # подключаемся 
