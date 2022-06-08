@@ -1,8 +1,11 @@
-import json, eventlet
+import json, eventlet, sys
 from eventlet import wsgi
-from direct.showbase.ShowBase import ShowBase
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from QPanda3D.Panda3DWorld import Panda3DWorld
+from QPanda3D.QPanda3DWidget import QPanda3DWidget
 from direct.gui.OnscreenImage import OnscreenImage
-from panda3d.core import LColor, LVecBase3, WindowProperties
+from panda3d.core import LColor, LVecBase3
 from socketio import Server, WSGIApp
 from threading import Thread
 
@@ -64,12 +67,20 @@ class ObjectServer: # SocketIO сервер, получающий координ
             
             self.sio.emit("response", {"response": "ok"}) # возвращаем ответ(необходимо для синхронизации)
 
-    def run(self): # запуск сокета в потоке
-        Thread(target=wsgi.server, args=(eventlet.listen((self.settings.ip, self.settings.port)), self.web_app)).start()
+    def close(self):
+        try:
+            self.session.__exit__()
+        except:
+            exit()
 
-class VisualizationApp(ShowBase): # Приложение визуализатора
+    def run(self): # запуск сокета в потоке
+        self.session = eventlet.listen((self.settings.ip, self.settings.port))
+        print(type(self.session))
+        Thread(target=wsgi.server, args=(self.session, self.web_app)).start()
+
+class VisualizationApp(Panda3DWorld): # Приложение визуализатора
     def __init__(self, settings):
-        ShowBase.__init__(self)
+        Panda3DWorld.__init__(self)
 
         self.settings = settings
         self.models = [] # список объектов
@@ -83,19 +94,6 @@ class VisualizationApp(ShowBase): # Приложение визуализато�
 
         self.disableMouse()
         self.reset_camera() # устанавливаем камеру в стартовое положение
-
-        # бинд клавиш на определенные действия
-        self.accept('arrow_left-repeat', self.key_left_event)
-        self.accept('arrow_right-repeat', self.key_right_event)
-        self.accept('arrow_up-repeat', self.key_up_event)
-        self.accept('arrow_down-repeat', self.key_down_event)
-        self.accept('r', self.reset_camera)
-        self.accept('w-repeat', self.key_w_event)
-        self.accept('s-repeat', self.key_s_event)
-        self.accept('a-repeat', self.key_a_event)
-        self.accept('d-repeat', self.key_d_event)
-        self.accept('q-repeat', self.key_q_event)
-        self.accept('e-repeat', self.key_e_event)
 
     def key_left_event(self):
         self.camera.setH(self.camera.getH() + 1)
@@ -145,10 +143,53 @@ class VisualizationApp(ShowBase): # Приложение визуализато�
         self.models[id].setPos(*position)
         self.models[id].setH(yaw)
 
+class VizWidget(QPanda3DWidget):
+    def __init__(self, word, main, server):
+        self.word = word
+        self.server = server
+        self.__main = main
+        super().__init__(self.word)
+
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.__main.close()
+            self.server.close()
+        elif event.key() == Qt.Key_Left:
+            self.word.key_left_event()
+        elif event.key() == Qt.Key_Right:
+            self.word.key_right_event()
+        elif event.key() == Qt.Key_Up:
+            self.word.key_up_event()
+        elif event.key() == Qt.Key_Down:
+            self.word.key_down_event()
+        elif event.key() == Qt.Key_R:
+            self.word.reset_camera()
+        elif event.key() == Qt.Key_W:
+            self.word.key_w_event()
+        elif event.key() == Qt.Key_S:
+            self.word.key_s_event()
+        elif event.key() == Qt.Key_A:
+            self.word.key_a_event()
+        elif event.key() == Qt.Key_D:
+            self.word.key_d_event()
+        elif event.key() == Qt.Key_Q:
+            self.word.key_q_event()
+        elif event.key() == Qt.Key_E:
+            self.word.key_e_event()
+
 if __name__ == '__main__':
     settings = SettingsManager()
     settings.load("./settings/settings.json")
-    app = VisualizationApp(settings)
-    server = ObjectServer(app, settings)
+    word = VisualizationApp(settings)
+    server = ObjectServer(word, settings)
+    
+    app = QApplication(sys.argv)
+    appw = QMainWindow()
+    appw.setGeometry(50, 50, 800, 600)
+    pandaWidget = VizWidget(word, appw, server)
+    appw.setCentralWidget(pandaWidget)
+    appw.show()
+
     server.run()
-    app.run()
+    
+    sys.exit(app.exec_())
