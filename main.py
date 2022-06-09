@@ -134,9 +134,9 @@ class VisualizationApp(Panda3DWorld): # Приложение визуализа�
         self.models.append(model)
         model.setPos(*position)
         model.setH(yaw)
-        model.setScale(settings.objects.scale)
+        model.setScale(self.settings.objects.scale)
         model.setP(270)
-        model.setColor(settings.objects.color)
+        model.setColor(self.settings.objects.color)
         model.reparentTo(self.render)
 
     def change_model_position(self, id, position, yaw):
