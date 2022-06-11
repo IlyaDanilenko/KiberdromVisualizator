@@ -143,7 +143,7 @@ class VisualizationApp(Panda3DWorld): # Приложение визуализа�
         self.models[id].setPos(*position)
         self.models[id].setH(yaw)
 
-class VizWidget(QPanda3DWidget):
+class VisWidget(QPanda3DWidget):
     def __init__(self, word, main, server):
         self.word = word
         self.server = server
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     appw = QMainWindow()
     appw.setGeometry(50, 50, 800, 600)
-    pandaWidget = VizWidget(word, appw, server)
+    pandaWidget = VisWidget(word, appw, server)
     appw.setCentralWidget(pandaWidget)
     appw.show()
 
