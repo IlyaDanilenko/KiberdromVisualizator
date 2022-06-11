@@ -150,10 +150,13 @@ class VisWidget(QPanda3DWidget):
         self.__main = main
         super().__init__(self.word)
 
+    def close(self):
+        self.__main.close()
+        self.server.close()
+
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Escape:
-            self.__main.close()
-            self.server.close()
+            self.close()
         elif event.key() == Qt.Key_Left:
             self.word.key_left_event()
         elif event.key() == Qt.Key_Right:
