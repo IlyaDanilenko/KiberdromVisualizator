@@ -75,7 +75,6 @@ class ObjectServer: # SocketIO сервер, получающий координ
 
     def run(self): # запуск сокета в потоке
         self.session = eventlet.listen((self.settings.ip, self.settings.port))
-        print(type(self.session))
         Thread(target=wsgi.server, args=(self.session, self.web_app)).start()
 
 class VisualizationWorld(Panda3DWorld): # Приложение визуализатора
