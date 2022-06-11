@@ -78,7 +78,7 @@ class ObjectServer: # SocketIO сервер, получающий координ
         print(type(self.session))
         Thread(target=wsgi.server, args=(self.session, self.web_app)).start()
 
-class VisualizationApp(Panda3DWorld): # Приложение визуализатора
+class VisualizationWorld(Panda3DWorld): # Приложение визуализатора
     def __init__(self, settings):
         Panda3DWorld.__init__(self)
 
@@ -180,13 +180,13 @@ class VisWidget(QPanda3DWidget):
 if __name__ == '__main__':
     settings = SettingsManager()
     settings.load("./settings/settings.json")
-    word = VisualizationApp(settings)
-    server = ObjectServer(word, settings)
+    world = VisualizationWorld(settings)
+    server = ObjectServer(world, settings)
     
     app = QApplication(sys.argv)
     appw = QMainWindow()
     appw.setGeometry(50, 50, 800, 600)
-    pandaWidget = VisWidget(word, appw, server)
+    pandaWidget = VisWidget(world, appw, server)
     appw.setCentralWidget(pandaWidget)
     appw.show()
 
