@@ -8,6 +8,7 @@ from direct.gui.OnscreenImage import OnscreenImage
 from panda3d.core import LColor, LVecBase3
 from socketio import Server, WSGIApp
 from threading import Thread
+from math import cos, sin, radians
 
 def remapRGB(r, g, b): # на вход значения от 0 до 255, на выходе значения от 0 до 1
     return r / 255, g / 255, b / 255
@@ -111,16 +112,20 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         self.camera.setHpr(self.settings.workspace.camera_angle)
 
     def key_w_event(self):
-        self.camera.setY(self.camera.getY() + 1)
+        self.camera.setY(self.camera.getY() + cos(radians(self.camera.getH())))
+        self.camera.setX(self.camera.getX() - sin(radians(self.camera.getH())))
 
     def key_s_event(self):
-        self.camera.setY(self.camera.getY() - 1)
+        self.camera.setY(self.camera.getY() - cos(radians(self.camera.getH())))
+        self.camera.setX(self.camera.getX() + sin(radians(self.camera.getH())))
 
     def key_a_event(self):
-        self.camera.setX(self.camera.getX() - 1)
+        self.camera.setY(self.camera.getY() - sin(radians(self.camera.getH())))
+        self.camera.setX(self.camera.getX() - cos(radians(self.camera.getH())))
 
     def key_d_event(self):
-        self.camera.setX(self.camera.getX() + 1)
+        self.camera.setY(self.camera.getY() + sin(radians(self.camera.getH())))
+        self.camera.setX(self.camera.getX() + cos(radians(self.camera.getH())))
 
     def key_q_event(self):
         self.camera.setZ(self.camera.getZ() + 1)
