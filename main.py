@@ -148,11 +148,11 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         self.models[id].setH(yaw)
 
 class VisWidget(QPanda3DWidget):
-    def __init__(self, word, main, server):
-        self.word = word
+    def __init__(self, world, main, server):
+        self.world = world
         self.server = server
         self.__main = main
-        super().__init__(self.word)
+        super().__init__(self.world)
 
     def close(self):
         self.__main.close()
@@ -162,27 +162,27 @@ class VisWidget(QPanda3DWidget):
         if event.key() == Qt.Key_Escape:
             self.close()
         elif event.key() == Qt.Key_Left:
-            self.word.key_left_event()
+            self.world.key_left_event()
         elif event.key() == Qt.Key_Right:
-            self.word.key_right_event()
+            self.world.key_right_event()
         elif event.key() == Qt.Key_Up:
-            self.word.key_up_event()
+            self.world.key_up_event()
         elif event.key() == Qt.Key_Down:
-            self.word.key_down_event()
+            self.world.key_down_event()
         elif event.key() == Qt.Key_R:
-            self.word.reset_camera()
+            self.world.reset_camera()
         elif event.key() == Qt.Key_W:
-            self.word.key_w_event()
+            self.world.key_w_event()
         elif event.key() == Qt.Key_S:
-            self.word.key_s_event()
+            self.world.key_s_event()
         elif event.key() == Qt.Key_A:
-            self.word.key_a_event()
+            self.world.key_a_event()
         elif event.key() == Qt.Key_D:
-            self.word.key_d_event()
+            self.world.key_d_event()
         elif event.key() == Qt.Key_Q:
-            self.word.key_q_event()
+            self.world.key_q_event()
         elif event.key() == Qt.Key_E:
-            self.word.key_e_event()
+            self.world.key_e_event()
 
 if __name__ == '__main__':
     settings = SettingsManager()
