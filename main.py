@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from QPanda3D.Panda3DWorld import Panda3DWorld
 from QPanda3D.QPanda3DWidget import QPanda3DWidget
 from direct.gui.OnscreenImage import OnscreenImage
-from panda3d.core import LColor, LVecBase3
+from panda3d.core import LColor, LVecBase3, LineSegs, NodePath
 from socketio import Server, WSGIApp
 from threading import Thread
 from math import cos, sin, radians
@@ -79,11 +79,33 @@ class ObjectServer: # SocketIO сервер, получающий координ
         Thread(target=wsgi.server, args=(self.session, self.web_app)).start()
 
 class VisualizationWorld(Panda3DWorld): # Приложение визуализатора
-    def __init__(self, settings):
+    def __init__(self, settings, axis=False):
         Panda3DWorld.__init__(self)
 
         self.settings = settings
         self.models = [] # список объектов
+
+        if axis:
+            x_line = LineSegs()
+            x_line.setColor(255, 0, 0)
+            x_line.moveTo(0, 0, 0)
+            x_line.drawTo(settings.polygon.scale.getX() * 2 + 2, 0, 0)
+            x_line.setThickness(2)
+            NodePath(x_line.create()).reparentTo(self.render)
+
+            y_line = LineSegs()
+            y_line.setColor(0, 0, 255)
+            y_line.moveTo(0, 0, 0)
+            y_line.drawTo(0, settings.polygon.scale.getZ() * 2 + 2, 0)
+            y_line.setThickness(2)
+            NodePath(y_line.create()).reparentTo(self.render)
+
+            z_line = LineSegs()
+            z_line.setColor(0, 255, 0)
+            z_line.moveTo(0, 0, 0)
+            z_line.drawTo(0, 0, 20)
+            z_line.setThickness(2)
+            NodePath(z_line.create()).reparentTo(self.render)
 
         self.setBackgroundColor(settings.workspace.background) # устанавливаем фон
 
