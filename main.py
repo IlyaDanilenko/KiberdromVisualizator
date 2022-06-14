@@ -103,7 +103,7 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
             z_line = LineSegs()
             z_line.setColor(0, 255, 0)
             z_line.moveTo(0, 0, 0)
-            z_line.drawTo(0, 0, 20)
+            z_line.drawTo(0, 0, settings.polygon.scale.getY() * 2 + 2)
             z_line.setThickness(2)
             NodePath(z_line.create()).reparentTo(self.render)
 
