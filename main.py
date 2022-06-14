@@ -53,6 +53,7 @@ class SettingsManager: # менеджер настроек
             self.polygon = PolygonSettings(settings['polygon'])
             self.objects = ObjectsSetings(settings['objects'])
             self.server = ServerSettings(settings.get('server'))
+            return settings
 
 class ObjectServer: # SocketIO сервер, получающий координаты всех объектов
     def __init__(self, visualization, settings):
