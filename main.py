@@ -31,9 +31,13 @@ class ObjectsSetings: # настройки объектов
         self.scale = LVecBase3(settings['scale']['x'], settings['scale']['y'], settings['scale']['z']) # размеры объектов
 
 class ServerSettings:
-    def __init__(self, settings):
-        self.ip = settings['ip']
-        self.port = settings['port']
+    def __init__(self, settings = None):
+        if settings is None:
+            self.ip = None
+            self.port = None
+        else:
+            self.ip = settings['ip']
+            self.port = settings['port']
 
 class SettingsManager: # менеджер настроек
     def __init__(self):
@@ -48,7 +52,7 @@ class SettingsManager: # менеджер настроек
             self.workspace = WorkspaceSettings(settings['workspace'])
             self.polygon = PolygonSettings(settings['polygon'])
             self.objects = ObjectsSetings(settings['objects'])
-            self.server = ServerSettings(settings['server'])
+            self.server = ServerSettings(settings.get('server'))
 
 class ObjectServer: # SocketIO сервер, получающий координаты всех объектов
     def __init__(self, visualization, settings):
