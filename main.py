@@ -80,6 +80,10 @@ class ObjectServer: # SocketIO сервер, получающий координ
 
 class VisualizationWorld(Panda3DWorld): # Приложение визуализатора
     def __init__(self, settings, axis=False):
+        self.__mouse_pos = None
+        self.__mouse1_click = False
+        self.__mouse2_click = False
+        self.__mouse3_click = False
         Panda3DWorld.__init__(self)
 
         self.settings = settings
@@ -115,44 +119,91 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         self.imageObject.reparentTo(self.render) # добавляем в сцену объект полигона
 
         self.disableMouse()
+        self.accept("mouse-move", self.mouse_move)
+        self.accept("mouse1", self.mouse1_button)
+        self.accept("mouse1-up", self.mouse1_button)
+        self.accept("mouse2", self.mouse2_button)
+        self.accept("mouse2-up", self.mouse2_button)
+        self.accept("mouse3", self.mouse3_button)
+        self.accept("mouse3-up", self.mouse3_button)
         self.reset_camera() # устанавливаем камеру в стартовое положение
 
-    def key_left_event(self):
+    def mouse_move(self, event):
+        if self.__mouse_pos is None:
+            self.__mouse_pos = event
+            
+        if self.__mouse_pos['x'] - event['x'] > 3:
+            if self.__mouse1_click:
+                self.yaw_left_camera()
+            elif self.__mouse2_click:
+                self.left_camera()
+        elif self.__mouse_pos['x'] - event['x'] < -3:
+            if self.__mouse1_click:
+                self.yaw_right_camera()
+            elif self.__mouse2_click:
+                self.right_camera()
+        if self.__mouse_pos['y'] - event['y'] > 3:
+            if self.__mouse1_click:
+                self.roll_up_camera()
+            elif self.__mouse2_click:
+                self.forward_camera()
+            elif self.__mouse3_click:
+                self.up_camera()
+        elif self.__mouse_pos['y'] - event['y'] < -3:
+            if self.__mouse1_click:
+                self.roll_down_camera()
+            elif self.__mouse2_click:
+                self.backward_camera()
+            elif self.__mouse3_click:
+                self.down_camera()
+        
+        self.__mouse_pos = event
+
+    def mouse1_button(self, event):
+        self.__mouse1_click = not self.__mouse1_click
+
+    def mouse2_button(self, event):
+        self.__mouse2_click = not self.__mouse2_click
+
+    def mouse3_button(self, event):
+        self.__mouse3_click = not self.__mouse3_click
+
+    def yaw_left_camera(self):
         self.camera.setH(self.camera.getH() + 1)
 
-    def key_right_event(self):
+    def yaw_right_camera(self):
         self.camera.setH(self.camera.getH() - 1)
 
-    def key_up_event(self):
+    def roll_up_camera(self):
         self.camera.setP(self.camera.getP() + 1)
 
-    def key_down_event(self):
+    def roll_down_camera(self):
         self.camera.setP(self.camera.getP() - 1)
 
     def reset_camera(self):
         self.camera.setPos(self.settings.workspace.camera_position)
         self.camera.setHpr(self.settings.workspace.camera_angle)
 
-    def key_w_event(self):
+    def forward_camera(self):
         self.camera.setY(self.camera.getY() + cos(radians(self.camera.getH())))
         self.camera.setX(self.camera.getX() - sin(radians(self.camera.getH())))
 
-    def key_s_event(self):
+    def backward_camera(self):
         self.camera.setY(self.camera.getY() - cos(radians(self.camera.getH())))
         self.camera.setX(self.camera.getX() + sin(radians(self.camera.getH())))
 
-    def key_a_event(self):
+    def left_camera(self):
         self.camera.setY(self.camera.getY() - sin(radians(self.camera.getH())))
         self.camera.setX(self.camera.getX() - cos(radians(self.camera.getH())))
 
-    def key_d_event(self):
+    def right_camera(self):
         self.camera.setY(self.camera.getY() + sin(radians(self.camera.getH())))
         self.camera.setX(self.camera.getX() + cos(radians(self.camera.getH())))
 
-    def key_q_event(self):
+    def up_camera(self):
         self.camera.setZ(self.camera.getZ() + 1)
 
-    def key_e_event(self):
+    def down_camera(self):
         self.camera.setZ(self.camera.getZ() - 1)
 
     def add_model(self, model_type, position, yaw):
@@ -184,27 +235,27 @@ class VisWidget(QPanda3DWidget):
         if event.key() == Qt.Key_Escape:
             self.close()
         elif event.key() == Qt.Key_Left:
-            self.world.key_left_event()
+            self.world.yaw_left_camera()
         elif event.key() == Qt.Key_Right:
-            self.world.key_right_event()
+            self.world.yaw_right_camera()
         elif event.key() == Qt.Key_Up:
-            self.world.key_up_event()
+            self.world.roll_up_camera()
         elif event.key() == Qt.Key_Down:
-            self.world.key_down_event()
+            self.world.roll_down_camera()
         elif event.key() == Qt.Key_R:
             self.world.reset_camera()
         elif event.key() == Qt.Key_W:
-            self.world.key_w_event()
+            self.world.forward_camera()
         elif event.key() == Qt.Key_S:
-            self.world.key_s_event()
+            self.world.backward_camera()
         elif event.key() == Qt.Key_A:
-            self.world.key_a_event()
+            self.world.left_camera()
         elif event.key() == Qt.Key_D:
-            self.world.key_d_event()
+            self.world.right_camera()
         elif event.key() == Qt.Key_Q:
-            self.world.key_q_event()
+            self.world.up_camera()
         elif event.key() == Qt.Key_E:
-            self.world.key_e_event()
+            self.world.down_camera()
 
 if __name__ == '__main__':
     settings = SettingsManager()
