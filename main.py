@@ -223,7 +223,7 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
 
     def change_model_color(self, id, r = 0, g = 0, b = 0):
         if not any((r, g, b)):
-            self.model.setColor(self.settings.objects.color)
+            self.models[id].setColor(self.settings.objects.color)
         else:
             self.models[id].setColor(LColor(r, g, b, 1))
 
