@@ -221,6 +221,9 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         model.setColor(self.settings.objects.color)
         model.reparentTo(self.render)
 
+    def change_model_color(self, id, r, g, b):
+        self.models[id].setColor(LColor(r, g, b, 1))
+
     def change_model_position(self, id, position, yaw):
         self.models[id].setPos(*position)
         self.models[id].setH(yaw)
