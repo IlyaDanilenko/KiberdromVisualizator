@@ -262,6 +262,12 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
             trajectory.hide()
         trajectory.reparentTo(self.render)
 
+    def reset_trajectories(self):
+        for index in range(len(self.models)):
+            for trajectory in self.trajectories[index]:
+                trajectory.removeNode()
+            self.__trajectories[index] = []
+
     def get_trajectory_visible(self):
         return self.__trajectories_visible
 
