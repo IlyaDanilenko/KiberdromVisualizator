@@ -18,6 +18,12 @@ class WorkspaceSettings: # настройки рабочего протсран�
         self.background = LColor(*remapRGB(settings['background']['r'], settings['background']['g'], settings['background']['b']), 1) # цвет заднего фона
         self.camera_position = LVecBase3(settings['camera']['position']['x'], settings['camera']['position']['y'], settings['camera']['position']['z']) # позиция камеры
         self.camera_angle = LVecBase3(settings['camera']['angle']['yaw'], settings['camera']['angle']['pitch'], settings['camera']['angle']['roll']) # углы наклона камеры
+        self.axis = settings['axis'] # нужно ли отображать оси
+        self.trajectory = settings['trajectory']['need'] # нужно ли отображать траекторию
+        self.trajectory_marker = settings['trajectory']['marker'] # имя модели отображения траектории
+        self.trajectory_distance = settings['trajectory']['distance']
+        self.trajectory_scale = settings['trajectory']['scale']
+        self.trajectory_color = LColor(*remapRGB(settings['trajectory']['color']['r'], settings['trajectory']['color']['g'], settings['trajectory']['color']['b']), 1)
 
 class PolygonSettings: # настройки полигона
     def __init__(self, settings):
@@ -84,7 +90,7 @@ class ObjectServer: # SocketIO сервер, получающий координ
         Thread(target=wsgi.server, args=(self.session, self.web_app)).start()
 
 class VisualizationWorld(Panda3DWorld): # Приложение визуализатора
-    def __init__(self, settings, axis=False):
+    def __init__(self, settings):
         self.__mouse_pos = None
         self.__mouse1_click = False
         self.__mouse2_click = False
@@ -92,9 +98,11 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         Panda3DWorld.__init__(self)
 
         self.settings = settings
+        self.__trajectories_visible = self.settings.workspace.trajectory
         self.models = [] # список объектов
+        self.__trajectories = []
 
-        if axis:
+        if settings.workspace.axis:
             x_line = LineSegs()
             x_line.setColor(255, 0, 0)
             x_line.moveTo(0, 0, 0)
@@ -214,6 +222,7 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
     def add_model(self, model_type, position, yaw):
         model = self.loader.loadModel(f"{self.settings.objects.path}/{model_type}.egg") # загружаем модель
         self.models.append(model)
+        self.__trajectories.append([])
         model.setPos(*position)
         model.setH(yaw)
         model.setScale(self.settings.objects.scale)
@@ -227,9 +236,42 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         else:
             self.models[id].setColor(LColor(r, g, b, 1))
 
+    def __get_between_distance(self, model1, model2):
+        x = abs(model1.getX() - model2.getX())
+        y = abs(model1.getY() - model2.getY())
+        z = abs(model1.getZ() - model2.getZ())
+        return x, y, z
+
     def change_model_position(self, id, position, yaw):
         self.models[id].setPos(*position)
         self.models[id].setH(yaw)
+        if len(self.__trajectories[id]) == 0:
+            self.add_trajectory(id, *position)
+        else:
+            distance = self.__get_between_distance(self.models[id], self.__trajectories[id][-1])
+            if distance[0] >= self.settings.workspace.trajectory_distance or distance[1] >= self.settings.workspace.trajectory_distance or distance[2] >= self.settings.workspace.trajectory_distance:
+                self.add_trajectory(id, *position)
+
+    def add_trajectory(self, object_id, x, y, z):
+        trajectory = self.loader.loadModel(f"{self.settings.objects.path}/{self.settings.workspace.trajectory_marker}.egg")
+        self.__trajectories[object_id].append(trajectory)
+        trajectory.setPos(x, y, z)
+        trajectory.setScale(self.settings.workspace.trajectory_scale, self.settings.workspace.trajectory_scale, self.settings.workspace.trajectory_scale)
+        trajectory.setColor(self.settings.workspace.trajectory_color)
+        if not self.__trajectories_visible:
+            trajectory.hide()
+        trajectory.reparentTo(self.render)
+
+    def set_trajectory_visible(self, value = True):
+        self.__trajectories_visible = value
+        if self.__trajectories_visible:
+            for index1 in range(len(self.__trajectories)):
+                for index2 in range(len(self.__trajectories[index1])):
+                    self.__trajectories[index1][index2].show()
+        else:
+            for index1 in range(len(self.__trajectories)):
+                for index2 in range(len(self.__trajectories[index1])):
+                    self.__trajectories[index1][index2].hide()
 
 class VisWidget(QPanda3DWidget):
     def __init__(self, world, main, server):
