@@ -264,7 +264,7 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
 
     def reset_trajectories(self):
         for index in range(len(self.models)):
-            for trajectory in self.trajectories[index]:
+            for trajectory in self.__trajectories[index]:
                 trajectory.removeNode()
             self.__trajectories[index] = []
 
