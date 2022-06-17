@@ -19,6 +19,7 @@ class WorkspaceSettings: # настройки рабочего протсран�
         self.camera_position = LVecBase3(settings['camera']['position']['x'], settings['camera']['position']['y'], settings['camera']['position']['z']) # позиция камеры
         self.camera_angle = LVecBase3(settings['camera']['angle']['yaw'], settings['camera']['angle']['pitch'], settings['camera']['angle']['roll']) # углы наклона камеры
         self.axis = settings['axis'] # нужно ли отображать оси
+        self.sensitivity = settings['sensitivity'] # чувствительность при движении камеры
         self.trajectory = settings['trajectory']['need'] # нужно ли отображать траекторию
         self.trajectory_marker = settings['trajectory']['marker'] # имя модели отображения траектории
         self.trajectory_distance = settings['trajectory']['distance']
@@ -182,36 +183,36 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         self.__mouse3_click = not self.__mouse3_click
 
     def yaw_left_camera(self):
-        self.camera.setH(self.camera.getH() + 1)
+        self.camera.setH(self.camera.getH() + 1 * self.settings.workspace.sensitivity)
 
     def yaw_right_camera(self):
-        self.camera.setH(self.camera.getH() - 1)
+        self.camera.setH(self.camera.getH() - 1 * self.settings.workspace.sensitivity)
 
     def roll_up_camera(self):
-        self.camera.setP(self.camera.getP() + 1)
+        self.camera.setP(self.camera.getP() + 1 * self.settings.workspace.sensitivity)
 
     def roll_down_camera(self):
-        self.camera.setP(self.camera.getP() - 1)
+        self.camera.setP(self.camera.getP() - 1 * self.settings.workspace.sensitivity)
 
     def reset_camera(self):
         self.camera.setPos(self.settings.workspace.camera_position)
         self.camera.setHpr(self.settings.workspace.camera_angle)
 
     def forward_camera(self):
-        self.camera.setY(self.camera.getY() + cos(radians(self.camera.getH())))
-        self.camera.setX(self.camera.getX() - sin(radians(self.camera.getH())))
+        self.camera.setY(self.camera.getY() + cos(radians(self.camera.getH())) * self.settings.workspace.sensitivity)
+        self.camera.setX(self.camera.getX() - sin(radians(self.camera.getH())) * self.settings.workspace.sensitivity)
 
     def backward_camera(self):
-        self.camera.setY(self.camera.getY() - cos(radians(self.camera.getH())))
-        self.camera.setX(self.camera.getX() + sin(radians(self.camera.getH())))
+        self.camera.setY(self.camera.getY() - cos(radians(self.camera.getH())) * self.settings.workspace.sensitivity)
+        self.camera.setX(self.camera.getX() + sin(radians(self.camera.getH())) * self.settings.workspace.sensitivity)
 
     def left_camera(self):
-        self.camera.setY(self.camera.getY() - sin(radians(self.camera.getH())))
-        self.camera.setX(self.camera.getX() - cos(radians(self.camera.getH())))
+        self.camera.setY(self.camera.getY() - sin(radians(self.camera.getH())) * self.settings.workspace.sensitivity)
+        self.camera.setX(self.camera.getX() - cos(radians(self.camera.getH())) * self.settings.workspace.sensitivity)
 
     def right_camera(self):
-        self.camera.setY(self.camera.getY() + sin(radians(self.camera.getH())))
-        self.camera.setX(self.camera.getX() + cos(radians(self.camera.getH())))
+        self.camera.setY(self.camera.getY() + sin(radians(self.camera.getH())) * self.settings.workspace.sensitivity)
+        self.camera.setX(self.camera.getX() + cos(radians(self.camera.getH())) * self.settings.workspace.sensitivity)
 
     def up_camera(self):
         self.camera.setZ(self.camera.getZ() + 1)
