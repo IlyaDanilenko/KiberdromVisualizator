@@ -200,6 +200,10 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         model.setColor(self.settings.objects.color)
         model.reparentTo(self.render)
 
+    def remove_model(self, id):
+        self.models[id].removeNode()
+        self.models.pop(id)
+
     def change_model_color(self, id, r = 0, g = 0, b = 0):
         if not any((r, g, b)):
             self.models[id].setColor(self.settings.objects.color)
