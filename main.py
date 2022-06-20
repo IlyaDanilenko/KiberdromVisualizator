@@ -226,7 +226,8 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         return self.models[id].getX(), self.models[id].getY(), self.models[id].getZ(), self.models[id].getH()
 
     def get_model_color(self, id):
-        return self.models[id].getColor()
+        color = self.models[id].getColor()
+        return color.getX(), color.getY(), color.getZ()
 
     def add_trajectory(self, object_id, x, y, z):
         trajectory = self.loader.loadModel(f"{self.settings.objects.path}/{self.settings.workspace.trajectory_marker}.egg")
