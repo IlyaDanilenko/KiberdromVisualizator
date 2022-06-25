@@ -74,21 +74,21 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
 
         if settings.workspace.axis:
             x_line = LineSegs()
-            x_line.setColor(255, 0, 0)
+            x_line.setColor(1, 0, 0)
             x_line.moveTo(0, 0, 0)
             x_line.drawTo(settings.polygon.scale.getX() * 2 + 2, 0, 0)
             x_line.setThickness(2)
             NodePath(x_line.create()).reparentTo(self.render)
 
             y_line = LineSegs()
-            y_line.setColor(0, 0, 255)
+            y_line.setColor(0, 1, 0)
             y_line.moveTo(0, 0, 0)
             y_line.drawTo(0, settings.polygon.scale.getZ() * 2 + 2, 0)
             y_line.setThickness(2)
             NodePath(y_line.create()).reparentTo(self.render)
 
             z_line = LineSegs()
-            z_line.setColor(0, 255, 0)
+            z_line.setColor(0, 0, 1)
             z_line.moveTo(0, 0, 0)
             z_line.drawTo(0, 0, settings.polygon.scale.getY() + 2)
             z_line.setThickness(2)
