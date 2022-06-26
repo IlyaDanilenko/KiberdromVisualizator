@@ -263,6 +263,12 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
                 for index2 in range(len(self.__trajectories[index1])):
                     self.__trajectories[index1][index2].hide()
 
+    def change_trajectory_color(self, id, r = 0, g = 0, b = 0):
+        if not any((r, g, b)):
+            self.__trajectories[id].setColor(self.settings.workspace.trajectory_color)
+        else:
+            self.__trajectories[id].setColor(LColor(r, g, b, 1))
+
 class VisWidget(QPanda3DWidget):
     def __init__(self, world, main, server):
         self.world = world
