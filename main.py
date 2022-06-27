@@ -252,9 +252,9 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
 
     def reset_trajectories(self):
         for index in range(len(self.models)):
-            for trajectory in self.__trajectories[index]:
+            for trajectory in self.__trajectories[index]["objects"]:
                 trajectory.removeNode()
-            self.__trajectories[index] = []
+            self.__trajectories[index]["objects"] = []
 
     def get_trajectory_visible(self):
         return self.__trajectories_visible
@@ -263,12 +263,12 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         self.__trajectories_visible = value
         if self.__trajectories_visible:
             for index1 in range(len(self.__trajectories)):
-                for index2 in range(len(self.__trajectories[index1])):
-                    self.__trajectories[index1][index2].show()
+                for index2 in range(len(self.__trajectories[index1]["objects"])):
+                    self.__trajectories[index1]["objects"][index2].show()
         else:
             for index1 in range(len(self.__trajectories)):
-                for index2 in range(len(self.__trajectories[index1])):
-                    self.__trajectories[index1][index2].hide()
+                for index2 in range(len(self.__trajectories[index1]["objects"])):
+                    self.__trajectories[index1]["objects"][index2].hide()
 
     def change_trajectory_color(self, id, r = 0, g = 0, b = 0):
         if not any((r, g, b)):
@@ -279,7 +279,7 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         self.__trajectories[id]["color"] = color
 
         for index in range(len(self.__trajectories[id])):
-            self.__trajectories[id][index].setColor(color)
+            self.__trajectories[id]["objects"][index].setColor(color)
 
 class VisWidget(QPanda3DWidget):
     def __init__(self, world, main, server):
