@@ -194,7 +194,7 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         self.models.append(model)
 
         trajectory_dict = {}
-        trajectory_dict["need"] = True
+        trajectory_dict["need"] = trajectory
         trajectory_dict["color"] = LColor(*trajectory_color, 1)
         trajectory_dict["objects"] = []
 
