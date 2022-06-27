@@ -216,6 +216,12 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
         else:
             self.models[id].setColor(LColor(r, g, b, 1))
 
+    def change_model_scale(self, id, scale = (0, 0, 0)):
+        if not any(scale):
+            self.models[id].setScale(self.settings.objects.scale)
+        else:
+            self.models[id].setScale(*scale)
+
     def __get_between_distance(self, model1, model2):
         x = abs(model1.getX() - model2.getX())
         y = abs(model1.getY() - model2.getY())
