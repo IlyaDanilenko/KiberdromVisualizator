@@ -278,7 +278,7 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
 
         self.__trajectories[id]["color"] = color
 
-        for index in range(len(self.__trajectories[id])):
+        for index in range(len(self.__trajectories[id]["objects"])):
             self.__trajectories[id]["objects"][index].setColor(color)
 
 class VisWidget(QPanda3DWidget):
