@@ -189,10 +189,16 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
     def down_camera(self):
         self.camera.setZ(self.camera.getZ() - 1)
 
-    def add_model(self, model_type, position, yaw):
+    def add_model(self, model_type, position, yaw, trajectory = True, trajectory_color = (0, 0, 0)):
         model = self.loader.loadModel(f"{self.settings.objects.path}/{model_type}.egg") # загружаем модель
         self.models.append(model)
-        self.__trajectories.append([])
+
+        trajectory_dict = {}
+        trajectory_dict["need"] = True
+        trajectory_dict["color"] = LColor(*trajectory_color, 1)
+        trajectory_dict["objects"] = []
+
+        self.__trajectories.append(trajectory_dict)
         model.setPos(*position)
         model.setH(yaw)
         model.setScale(self.settings.objects.scale)
@@ -219,12 +225,13 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
     def change_model_position(self, id, position, yaw):
         self.models[id].setPos(*position)
         self.models[id].setH(yaw)
-        if len(self.__trajectories[id]) == 0:
-            self.add_trajectory(id, *position)
-        else:
-            distance = self.__get_between_distance(self.models[id], self.__trajectories[id][-1])
-            if distance[0] >= self.settings.workspace.trajectory_distance or distance[1] >= self.settings.workspace.trajectory_distance or distance[2] >= self.settings.workspace.trajectory_distance:
+        if self.__trajectories[id]["need"]:
+            if len(self.__trajectories[id]["objects"]) == 0:
                 self.add_trajectory(id, *position)
+            else:
+                distance = self.__get_between_distance(self.models[id], self.__trajectories[id]["objects"][-1])
+                if distance[0] >= self.settings.workspace.trajectory_distance or distance[1] >= self.settings.workspace.trajectory_distance or distance[2] >= self.settings.workspace.trajectory_distance:
+                    self.add_trajectory(id, *position)
 
     def get_model_position(self, id):
         return self.models[id].getX(), self.models[id].getY(), self.models[id].getZ(), self.models[id].getH()
@@ -235,10 +242,10 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
 
     def add_trajectory(self, object_id, x, y, z):
         trajectory = self.loader.loadModel(f"{self.settings.objects.path}/{self.settings.workspace.trajectory_marker}.egg")
-        self.__trajectories[object_id].append(trajectory)
+        self.__trajectories[object_id]["objects"].append(trajectory)
         trajectory.setPos(x, y, z)
         trajectory.setScale(self.settings.workspace.trajectory_scale, self.settings.workspace.trajectory_scale, self.settings.workspace.trajectory_scale)
-        trajectory.setColor(self.settings.workspace.trajectory_color)
+        trajectory.setColor(*self.__trajectories[object_id]["color"])
         if not self.__trajectories_visible:
             trajectory.hide()
         trajectory.reparentTo(self.render)
@@ -264,11 +271,15 @@ class VisualizationWorld(Panda3DWorld): # Приложение визуализ�
                     self.__trajectories[index1][index2].hide()
 
     def change_trajectory_color(self, id, r = 0, g = 0, b = 0):
+        if not any((r, g, b)):
+            color = self.settings.workspace.trajectory_color
+        else:
+            color = LColor(r, g, b, 1)
+
+        self.__trajectories[id]["color"] = color
+
         for index in range(len(self.__trajectories[id])):
-            if not any((r, g, b)):
-                self.__trajectories[id][index].setColor(self.settings.workspace.trajectory_color)
-            else:
-                self.__trajectories[id][index].setColor(LColor(r, g, b, 1))
+            self.__trajectories[id][index].setColor(color)
 
 class VisWidget(QPanda3DWidget):
     def __init__(self, world, main, server):
