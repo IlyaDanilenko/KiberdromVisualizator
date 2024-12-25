@@ -3,11 +3,11 @@
 ## Установка
 1. Клонируем репозиторий
 ```
-git clone https://github.com/IlyaDanilenko/KiberdromVisualizator.git
+git clone https://github.com/IlyaDanilenko/ObjectVisualizator.git
 ```
 2. Устанавливаем необходимые библиотеки Python
 ```
-cd KiberdromVisualizator
+cd ObjectVisualizator
 pip install -r requirements.txt
 ```
 
